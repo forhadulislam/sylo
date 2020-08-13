@@ -1,3 +1,3 @@
-# Golam
+# GolMS
 
 Golang microservice helper
