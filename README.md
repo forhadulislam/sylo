@@ -19,7 +19,7 @@ To create a new service with GolMS use this command
 
   `make create-service`
 
-You will have to input an unique service name. And it requires to provice service names with any `spaces`. If you have created a new service successfully then you should see a new directory created inside the `./service` directory with the same name you provided. 
+You will have to input an unique service name. And it requires to provice service names with any `spaces`. If you have created a new service successfully then you should see a new directory created inside the `./service` directory with the same name you provided for the service. 
 
 # This is a Work in Progress. Do not use it until its ready.
 
