@@ -4,11 +4,18 @@ REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d '.' -f2)
 SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d '.' -f2)
 
 
+
 SERVICE_ROOT = "./services/"
 PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
 SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
+
+GO_BIN?=snap/bin/go
+
+check-go:
+	@echo "Actual go version is ${ACTUAL_GO_VERSION}"
+	@exit 1
 
 new-service:
 	@read -p "Enter Service Name: " SERVICE_NAME; \
@@ -56,7 +63,7 @@ up:
 down:
 	docker-compose down --volumes --remove-orphans
 
-showGo:
+showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
 	@echo "${ACTUAL_GO_VERSION}"
 	@echo "${REQ_GO_MINOR_VERSION}"
