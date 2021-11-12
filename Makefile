@@ -1,3 +1,9 @@
+PREFERRED_GO_VERSION?=1.17.0
+ACTUAL_GO_VERSION := $(shell go version | cut -d' ' -f3)
+REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d'.' -f2)
+SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d'.' -f2)
+
+
 SERVICE_ROOT = "./services/"
 PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
@@ -45,7 +51,13 @@ start-up:
 	docker-compose up
 	
 up:
-	docker-compose up
+	docker-compose up -V --remove-orphans --always-recreate-deps dependencies
 	
 down:
-	docker-compose down
+	docker-compose down --volumes --remove-orphans
+
+showGo:
+	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
+	@echo "${ACTUAL_GO_VERSION}"
+	@echo "${REQ_GO_MINOR_VERSION}"
+	@echo "${SYSTEM_GO_MINOR_VERSION}"
