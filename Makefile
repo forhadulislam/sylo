@@ -1,7 +1,7 @@
 PREFERRED_GO_VERSION?=1.17.0
-ACTUAL_GO_VERSION := $(shell go version | cut -d' ' -f3)
-REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d'.' -f2)
-SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d'.' -f2)
+ACTUAL_GO_VERSION := $(shell go version | cut -d ' ' -f3)
+REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d '.' -f2)
+SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d '.' -f2)
 
 
 SERVICE_ROOT = "./services/"
