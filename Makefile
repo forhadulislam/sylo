@@ -11,11 +11,14 @@ RESOURCES_ROOT = "./.resources/"
 SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 
-GO_BIN?=snap/bin/go
+GO_BIN?=/snap/bin/go
+
+ifeq ($(OS),Windows_NT)
+	@echo "this is windows"
+endif
 
 check-go:
 	@echo "Actual go version is ${ACTUAL_GO_VERSION}"
-	@exit 1
 
 new-service:
 	@read -p "Enter Service Name: " SERVICE_NAME; \
