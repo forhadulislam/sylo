@@ -3,7 +3,6 @@ ACTUAL_GO_VERSION := $(shell go version | cut -d ' ' -f3)
 REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d '.' -f2)
 SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d '.' -f2)
 
-
 SERVICE_ROOT = "./services/"
 PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
@@ -11,6 +10,11 @@ SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
+DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/)
+CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES}
+CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL))
+CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED))
+CHANGED_SERVICES_NAMES = $(patsubst services/%/%,services/%/,$(CHANGED_FILES_FOR_SERVICES))
 
 GO_BIN?=/snap/bin/go
 
@@ -74,6 +78,15 @@ changed-files:
 changed-services: changed-files
 	@echo "Changed services"
 	@echo ${CHANGED_SERVICES}
+
+changed-services-all:
+	@echo "ALL Changed services "
+	@echo ${CHANGED_SERVICES_ALL}
+	@echo "Deleted files for services"
+	@echo ${DELETED_FILES_SVC}
+	@echo "Changed files without deleted"
+	@echo ${CHANGED_FILES_FOR_SERVICES}
+	@echo ${CHANGED_SERVICES_NAMES}
 
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
