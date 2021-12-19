@@ -66,6 +66,9 @@ up:
 down:
 	docker-compose down --volumes --remove-orphans
 
+changed-services:
+	git status
+
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
 	@echo "${ACTUAL_GO_VERSION}"
