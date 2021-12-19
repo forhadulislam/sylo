@@ -5,8 +5,6 @@
 #       2. ./cli.sh functionA arg1
 #
 
-
-
 functionA() {
   echo "TEST A $1";
 }
