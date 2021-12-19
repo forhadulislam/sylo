@@ -10,6 +10,8 @@ PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
 SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
+CHANGED_FILES := $(shell git diff origin/master... --name-only)
+CHANGED_SERVICES := $(shell git diff origin/master... --name-only)
 
 GO_BIN?=/snap/bin/go
 
@@ -66,8 +68,13 @@ up:
 down:
 	docker-compose down --volumes --remove-orphans
 
-changed-services:
-	git status
+changed-files:
+	@echo "Changed files"
+	@echo ${CHANGED_FILES}
+
+changed-services: changed-files
+	@echo "Changed services"
+	@echo ${CHANGED_SERVICES}
 
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
