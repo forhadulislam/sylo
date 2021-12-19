@@ -4,14 +4,13 @@ REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d '.' -f2)
 SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d '.' -f2)
 
 
-
 SERVICE_ROOT = "./services/"
 PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
 SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
-CHANGED_SERVICES := $(shell git diff origin/master... --name-only)
+CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
 
 GO_BIN?=/snap/bin/go
 
