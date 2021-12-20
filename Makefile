@@ -10,11 +10,11 @@ SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
-DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/)
-CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES}
-CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL))
-CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED))
-CHANGED_SERVICES_NAMES = $(patsubst services/%/%,services/%/,$(CHANGED_FILES_FOR_SERVICES))
+DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
+CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES} # Append changed files
+CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL)) # Remove deleted files from list
+CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)) # Filter service related files only
+CHANGED_SERVICES_NAMES = $(patsubst services/%/%,services/%/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
 
 GO_BIN?=/snap/bin/go
 
@@ -87,6 +87,12 @@ changed-services-all:
 	@echo "Changed files without deleted"
 	@echo ${CHANGED_FILES_FOR_SERVICES}
 	@echo ${CHANGED_SERVICES_NAMES}
+
+run-bash:
+	NAME=samid ./cli.sh functionA blah
+	@export NAME=somethingelse
+	echo $(NAME)
+	echo $$NAME
 
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"

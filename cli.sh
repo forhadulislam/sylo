@@ -7,6 +7,9 @@
 
 functionA() {
   echo "TEST A $1";
+  echo "This is $NAME";
+  export NAME="$NAME";
+  printenv
 }
 
 functionB() {
