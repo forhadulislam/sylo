@@ -8,15 +8,22 @@ PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
 SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
+ALL_PACKAGES_WITH_OPENAPI := $(patsubst pkg/%/api_codegen.go,pkg/%,$(wildcard pkg/*/api_codegen.go))
+ALL_SERVICES_WITH_DB := $(patsubst svc/%/migrations/db,svc/%,$(wildcard svc/*/migrations/db)) # instead of db it can be something else i.e mysql 
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
 DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
 CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES} # Append changed files
 CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL)) # Remove deleted files from list
 CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)) # Filter service related files only
-CHANGED_SERVICES_NAMES = $(patsubst services/%/%,services/%/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
+CHANGED_SERVICES_NAMES = $(patsubst services/%/%.go,services/%/%.sdd/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
 
 GO_BIN?=/snap/bin/go # Go Binary
+
+DUPS:=a b a a c
+
+objects = main.o foo.o bar.o utils.o
+objects += another.o
 
 ifeq ($(OS),Windows_NT)
 	@echo "this is windows"
@@ -79,6 +86,10 @@ changed-services: changed-files
 	@echo "Changed services"
 	@echo ${CHANGED_SERVICES}
 
+loop-changed-services:
+	echo "sBss"	
+	echo ${objects}
+
 changed-services-all:
 	@echo "ALL Changed services "
 	@echo ${CHANGED_SERVICES_ALL}
@@ -86,6 +97,7 @@ changed-services-all:
 	@echo ${DELETED_FILES_SVC}
 	@echo "Changed files without deleted"
 	@echo ${CHANGED_FILES_FOR_SERVICES}
+	@echo "CHANGED_SERVICES_NAMES"
 	@echo ${CHANGED_SERVICES_NAMES}
 
 run-bash:
