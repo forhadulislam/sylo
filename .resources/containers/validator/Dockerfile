@@ -8,11 +8,11 @@ RUN apk add make \
 
 RUN apk update
 RUN apk --no-cache add \
-    python \
+    curl \ 
+    py-pip \
     libc6-compat \
-    jq \
-    py-pip && \
-    pip install --upgrade pip==18.1
+    jq && \
+    pip install --upgrade pip==21.3.1
 
 RUN pip install shyaml \
     && pip install PyYAML
