@@ -8,3 +8,4 @@ echo -e "${varRepos}";
 
 anotherVar=$(echo -e "${varRepos}" | shyaml get-value name);
 echo $anotherVar;
+

@@ -106,23 +106,21 @@ run-bash:
 	echo $(NAME)
 	echo $$NAME
 
-docker-build-validate:
-	
-
 validate:
 	# @echo Validating for ${@F}
 	@echo Validating for Validator
 	docker build ./.resources/containers/validator -t validator
-	# $(eval VALIDATE_DIR=target/${*}/helm/${@F})
+	# $(eval VALIDATE_DIR=target/${*}/hart/${@F})
 	# docker pull docker-registry.local/validator:latest
-	docker run --rm \
+	@docker run --rm \
 		-v "${CURDIR}/target/${*}:/workdir" \
 		-e APP_NAME=${@F} \
 		-e COMMIT_ID=${COMMIT_ID} \
 		-e CHANGE_ID=${CHANGE_ID} \
 		-e VERSION=${SVC_VERSION} \
 		validator:latest
-	@rm -rf ${VALIDATE_DIR}
+	# @rm -rf ${VALIDATE_DIR}
+	@echo $?
 
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
