@@ -109,6 +109,7 @@ run-bash:
 validate:
 	# @echo Validating for ${@F}
 	@echo Validating for Validator
+	echo argument is $(argument)
 	docker build ./.resources/containers/validator -t validator
 	# $(eval VALIDATE_DIR=target/${*}/hart/${@F})
 	# docker pull docker-registry.local/validator:latest
@@ -118,9 +119,24 @@ validate:
 		-e COMMIT_ID=${COMMIT_ID} \
 		-e CHANGE_ID=${CHANGE_ID} \
 		-e VERSION=${SVC_VERSION} \
+		-e ENTRYPOINT=someshell.sh \
 		validator:latest
 	# @rm -rf ${VALIDATE_DIR}
-	@echo $?
+	@echo $1
+	@echo $(shell echo $(MAKECMDGOALS) | sed 's!^.* $@ !!')
+
+run-go-tools:
+	@echo Validating for Validator
+	docker build ./.resources/containers/go-tools -t go-tools
+	@docker run --rm \
+		-v "${CURDIR}/target/${*}:/workdir" \
+		-e APP_NAME=${@F} \
+		-e COMMIT_ID=${COMMIT_ID} \
+		-e CHANGE_ID=${CHANGE_ID} \
+		-e VERSION=${SVC_VERSION} \
+		-e ENTRYPOINT=someshell.sh \
+		go-tools:latest
+	# @rm -rf ${VALIDATE_DIR}
 
 showGo: ${GO_BIN} check-go
 	@echo "Required Go version: ${PREFERRED_GO_VERSION}"
