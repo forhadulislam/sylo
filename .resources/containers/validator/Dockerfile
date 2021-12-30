@@ -11,7 +11,8 @@ RUN apk --no-cache add \
     curl \ 
     py-pip \
     libc6-compat \
-    jq && \
+    jq \ 
+    shellcheck && \
     pip install --upgrade pip==21.3.1
 
 RUN pip install shyaml \

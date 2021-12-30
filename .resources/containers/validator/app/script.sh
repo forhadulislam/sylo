@@ -11,3 +11,5 @@ echo $anotherVar;
 
 echo $ENTRYPOINT;
 
+shellcheck -e SC2002 -e SC2181 -e SC2044 -e SC2116 -e SC2060 -e SC2016 ./sample.sh;
+
