@@ -1,1 +1,1 @@
- package configurations
+ package config
