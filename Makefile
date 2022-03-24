@@ -10,9 +10,12 @@ SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 ALL_PACKAGES_WITH_OPENAPI := $(patsubst pkg/%/api_codegen.go,pkg/%,$(wildcard pkg/*/api_codegen.go))
 ALL_SERVICES_WITH_DB := $(patsubst svc/%/migrations/db,svc/%,$(wildcard svc/*/migrations/db)) # instead of db it can be something else i.e mysql 
+FIND_FILES_WITH_SPACES := $(shell find ./  | grep " ")
 BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
+ALL_CHANGED_FILES := ${CHANGED_SERVICES} ${CHANGED_FILES}
+UNTRACKED_FILES := $(shell git ls-files --others --exclude-standard)
 DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
 CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES} # Append changed files
 CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL)) # Remove deleted files from list
@@ -79,10 +82,23 @@ up:
 down:
 	docker-compose down --volumes --remove-orphans
 
-changed-files:
+find-files-with-spaces:
+	@if [ "$(FIND_FILES_WITH_SPACES)" = "" ]; then \
+		echo "There are no directory/file named with spaces"; \
+	else \
+		echo "There are directories/files named with spaces. Please fix those issues"; \
+		echo ${FIND_FILES_WITH_SPACES}; \
+		exit 1; \
+	fi
+	
+
+changed-files: find-files-with-spaces
 	@echo "Changed files"
-	@echo ${CHANGED_FILES}
-	@echo ${BRANCH_NAME}
+	@echo CHANGED FILES ${CHANGED_FILES}
+	@echo BRANCH NAME: ${BRANCH_NAME}
+	@echo Untracked changed files: ${UNTRACKED_FILES}
+	@echo All changed files: ${ALL_CHANGED_FILES} 
+	@echo $(ALL_CHANGED_FILES[1])
 	@if [ "$(BRANCH_NAME)" = "master" ]; then \
 		echo "This is master branch"; \
 		#exit 1; \
