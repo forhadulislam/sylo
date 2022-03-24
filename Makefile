@@ -10,6 +10,7 @@ SERVICE_TEMPLATE_DIR = $(RESOURCES_ROOT)service-template/*
 PACKAGE_TEMPLATE_DIR = $(RESOURCES_ROOT)package-template/*
 ALL_PACKAGES_WITH_OPENAPI := $(patsubst pkg/%/api_codegen.go,pkg/%,$(wildcard pkg/*/api_codegen.go))
 ALL_SERVICES_WITH_DB := $(patsubst svc/%/migrations/db,svc/%,$(wildcard svc/*/migrations/db)) # instead of db it can be something else i.e mysql 
+BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
 DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
@@ -81,6 +82,13 @@ down:
 changed-files:
 	@echo "Changed files"
 	@echo ${CHANGED_FILES}
+	@echo ${BRANCH_NAME}
+	@if [ "$(BRANCH_NAME)" = "master" ]; then \
+		echo "This is master branch"; \
+		#exit 1; \
+	else \
+		echo "this is not master"; \
+	fi \
 
 changed-services: changed-files
 	@echo "Changed services"
