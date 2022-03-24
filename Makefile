@@ -19,7 +19,7 @@ CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SER
 CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)) # Filter service related files only
 CHANGED_SERVICES_NAMES = $(patsubst services/%/%.go,services/%/%.sdd/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
 
-GO_BIN?=/snap/bin/go # Go Binary
+GO_BIN?=/snap/bin/go # Go Binary 
 
 DUPS:=a b a a c
 
