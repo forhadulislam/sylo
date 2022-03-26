@@ -71,6 +71,9 @@ delete-service:
 	
 unit-tests: find-files-with-spaces
 	@echo "### Running unit tests ###"
+	@if [ "$(ALL_CHANGED_SERVICES_SORT)" = "" ]; then \
+		echo "No service got changes. Skipping unit test run."; \
+	fi \ 
 	@echo $(ALL_CHANGED_SERVICES_SORT)
 	@$(foreach ch_service,$(ALL_CHANGED_SERVICES_SORT),\
 		echo Running tests for service: ${SERVICE_ROOT}${ch_service}; \
