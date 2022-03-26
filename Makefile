@@ -72,17 +72,20 @@ new-package:
 
 delete-service:
 	@echo "Deleting service: $(service)"
-	
+
+# Previously ALL_CHANGED_SERVICES_MASTER was here but currently runnning all
+# of the unit-tests in every run. Trying to figure out how to compare latest
+# commit with the last in Github build 
 unit-tests: find-files-with-spaces changed-files
 	@echo "### Running unit tests ###";
-	@echo ${ALL_CHANGED_SERVICES_MASTER}	
+	@echo ${SERVICES_LIST}
 	@if [ "$(TMP_SRV)" = " " ]; then \
 		echo "No service got changed. Skipping unit test run."; \
 	fi
-	@$(foreach ch_service,$(TMP_SRV),\
-		if [ -d "${SERVICE_ROOT}$(ch_service)" ]; then \
+	@$(foreach ch_service,$(SERVICES_LIST),\
+		if [ -d "$(ch_service)" ]; then \
 			echo Running unit tests for service: ${ch_service}; \
-			go test -v ${SERVICE_ROOT}$(ch_service)/...; \
+			go test -v ./$(ch_service)/...; \
 		fi; \
 	)
 
