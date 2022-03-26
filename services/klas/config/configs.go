@@ -1,5 +1,5 @@
  package config
 
  func Config() string{
-	return "my config"
+	return "My config"
 }

@@ -96,7 +96,7 @@ down:
 
 find-files-with-spaces:
 	@if [ "$(FIND_FILES_WITH_SPACES)" = "" ]; then \
-		echo ""; \
+		echo "All good"; \
 	else \
 		echo "There are directories/files named with spaces. Please fix those issues"; \
 		echo ${FIND_FILES_WITH_SPACES}; \
