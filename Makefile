@@ -15,7 +15,7 @@ BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ${SERVICE_ROOT})
 STAGED_CHANGED_FILES := $(shell git diff --cached --name-only)
-ALL_CHANGED_FILES := ${CHANGED_SERVICES} ${CHANGED_FILES} ${STAGED_CHANGED_FILES}
+
 UNTRACKED_FILES := $(shell git ls-files --others --exclude-standard)
 DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
 CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES} # Append changed files
@@ -23,10 +23,14 @@ CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SER
 CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)) # Filter service related files only
 CHANGED_SERVICES_NAMES = $(patsubst services/%/%.go,services/%/%.sdd/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
 SERVICES_LIST := $(wildcard services/*)
-ALL_CHANGED_SERVICES := $(call _uniq, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
-ALL_CHANGED_SERVICES_SORT ?= $(call sort, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
-ALL_CHANGED_FILES_WITH_EXTENSIONS := $(foreach F,$(ALL_CHANGED_FILES),$(lastword $(subst /, ,$F)))
 
+ALL_CHANGED_FILES := ${CHANGED_SERVICES} ${CHANGED_FILES} ${STAGED_CHANGED_FILES}
+ALL_CHANGED_FILES_MASTER := ${CHANGED_SERVICES} $(shell git diff HEAD^ HEAD --name-only)
+# ALL_CHANGED_SERVICES_UNIQ := $(call _uniq, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
+ALL_CHANGED_SERVICES ?= $(call sort, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F))))
+ALL_CHANGED_SERVICES_MASTER ?= $(call sort, $(foreach F,$(ALL_CHANGED_FILES_MASTER),$(word 2,$(subst /, ,$F)))) 
+ALL_CHANGED_FILES_WITH_EXTENSIONS := $(foreach F,$(ALL_CHANGED_FILES),$(lastword $(subst /, ,$F)))
+TMP_SRV := 
 _uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
 
 GO_BIN?=/snap/bin/go # Go Binary 
@@ -69,12 +73,13 @@ new-package:
 delete-service:
 	@echo "Deleting service: $(service)"
 	
-unit-tests: find-files-with-spaces
-	@echo "### Running unit tests ###";	
-	@if [ "$(ALL_CHANGED_SERVICES_SORT)" = " " ]; then \
+unit-tests: find-files-with-spaces changed-files
+	@echo "### Running unit tests ###";
+	@echo ${ALL_CHANGED_SERVICES_MASTER}	
+	@if [ "$(TMP_SRV)" = " " ]; then \
 		echo "No service got changed. Skipping unit test run."; \
 	fi
-	@$(foreach ch_service,$(ALL_CHANGED_SERVICES_SORT),\
+	@$(foreach ch_service,$(TMP_SRV),\
 		if [ -d "${SERVICE_ROOT}$(ch_service)" ]; then \
 			echo Running unit tests for service: ${ch_service}; \
 			go test -v ${SERVICE_ROOT}$(ch_service)/...; \
@@ -107,16 +112,16 @@ find-files-with-spaces:
 		exit 1; \
 	fi
 
-changed-files: find-files-with-spaces
-	@echo ALL SERVICES: $(SERVICES_LIST)
-	@echo CHANGED SERVICES: $(ALL_CHANGED_SERVICES_SORT)
-	
-	@echo Final 2 $(ALL_CHANGED_FILES_WITH_EXTENSIONS)
+changed-files: find-files-with-spaces	
 	@if [ "$(BRANCH_NAME)" = "master" ]; then \
+		$(eval TMP_SRV := ${ALL_CHANGED_SERVICES_MASTER}) \
 		echo "This is master branch"; \
 	else \
 		echo "this is not master branch"; \
 	fi \
+
+	@echo ALL SERVICES: $(SERVICES_LIST)
+	@echo CHANGED SERVICES: $(ALL_CHANGED_SERVICES)
 
 changed-services: changed-files
 	@echo "Changed services"
