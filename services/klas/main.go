@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("My new Service empty! ")
+	fmt.Println("My new Service empty!") 
 }

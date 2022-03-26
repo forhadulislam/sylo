@@ -14,13 +14,16 @@ FIND_FILES_WITH_SPACES := $(shell find ./  | grep " ")
 BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 CHANGED_FILES := $(shell git diff origin/master... --name-only)
 CHANGED_SERVICES := $(shell git ls-files --modified --others ./services/)
-ALL_CHANGED_FILES := ${CHANGED_SERVICES} ${CHANGED_FILES}
+STAGED_CHANGED_FILES := $(shell git diff --cached --name-only)
+ALL_CHANGED_FILES := ${CHANGED_SERVICES} ${CHANGED_FILES} ${STAGED_CHANGED_FILES}
 UNTRACKED_FILES := $(shell git ls-files --others --exclude-standard)
 DELETED_FILES_SVC := $(shell git ls-files --deleted ./services/) # TODO: List deleted files
 CHANGED_SERVICES_ALL := ${CHANGED_SERVICES} ${CHANGED_FILES} # Append changed files
 CHANGED_FILES_WITHOUT_DELETED = $(filter-out ${DELETED_FILES_SVC}, $(CHANGED_SERVICES_ALL)) # Remove deleted files from list
 CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)) # Filter service related files only
 CHANGED_SERVICES_NAMES = $(patsubst services/%/%.go,services/%/%.sdd/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
+
+_uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
 
 GO_BIN?=/snap/bin/go # Go Binary 
 
@@ -90,15 +93,37 @@ find-files-with-spaces:
 		echo ${FIND_FILES_WITH_SPACES}; \
 		exit 1; \
 	fi
-	
+
+SERVICES_LIST := $(wildcard services/*)
+objects=main1.o foo.o main2.o bar.o
+mains=main1.o main2.o
+
+files := xx_foo1.c yy_foo2.c zz_bar1.c aa_bb_bar2.c
+ALL_CHANGED_SERVICES := $(call _uniq, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
+ALL_CHANGED_SERVICES_SORT := $(call sort, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
+ALL_CHANGED_FILES_WITH_EXTENSIONS := $(foreach F,$(ALL_CHANGED_FILES),$(lastword $(subst /, ,$F)))
+w := z z x x y c x
+
+$(info $(sort $w))
+$(info $(call _uniq,$w))
 
 changed-files: find-files-with-spaces
+	@echo $w
 	@echo "Changed files"
 	@echo CHANGED FILES ${CHANGED_FILES}
+	@echo SERVICES_LIST ${SERVICES_LIST}
+	@echo $(filter-out $(mains),$(objects))
+	@echo $(findstring services/*, $(ALL_CHANGED_FILES))
+	@echo filter $(filter  services/% services/%/, $(ALL_CHANGED_FILES))
+	@echo SRV Patsubst $(patsubst services/*/%, $(SERVICES_LIST), $(ALL_CHANGED_FILES))
+	@echo SDtackOverflow $(foreach F,$(ALL_CHANGED_FILES),$(lastword $(subst _, ,$F)))
 	@echo BRANCH NAME: ${BRANCH_NAME}
 	@echo Untracked changed files: ${UNTRACKED_FILES}
 	@echo All changed files: ${ALL_CHANGED_FILES} 
-	@echo $(ALL_CHANGED_FILES[1])
+	@echo Final $(ALL_CHANGED_SERVICES) 
+	@echo Final $(ALL_CHANGED_SERVICES_SORT)
+	@echo $(call _uniq,$w)
+	@echo Final 2 $(ALL_CHANGED_FILES_WITH_EXTENSIONS)
 	@if [ "$(BRANCH_NAME)" = "master" ]; then \
 		echo "This is master branch"; \
 		#exit 1; \
