@@ -24,7 +24,7 @@ CHANGED_FILES_FOR_SERVICES = $(filter services%,$(CHANGED_FILES_WITHOUT_DELETED)
 CHANGED_SERVICES_NAMES = $(patsubst services/%/%.go,services/%/%.sdd/,$(CHANGED_FILES_FOR_SERVICES)) # TODO: filter changed service names
 SERVICES_LIST := $(wildcard services/*)
 ALL_CHANGED_SERVICES := $(call _uniq, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
-ALL_CHANGED_SERVICES_SORT := $(call sort, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
+ALL_CHANGED_SERVICES_SORT ?= $(call sort, $(foreach F,$(ALL_CHANGED_FILES),$(word 2,$(subst /, ,$F)))) 
 ALL_CHANGED_FILES_WITH_EXTENSIONS := $(foreach F,$(ALL_CHANGED_FILES),$(lastword $(subst /, ,$F)))
 
 _uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
@@ -70,14 +70,15 @@ delete-service:
 	@echo "Deleting service: $(service)"
 	
 unit-tests: find-files-with-spaces
-	@echo "### Running unit tests ###"
-	@if [ "$(ALL_CHANGED_SERVICES_SORT)" = "" ]; then \
-		echo "No service got changes. Skipping unit test run."; \
-	fi \ 
-	@echo $(ALL_CHANGED_SERVICES_SORT)
+	@echo "### Running unit tests ###";	
+	@if [ "$(ALL_CHANGED_SERVICES_SORT)" = " " ]; then \
+		echo "No service got changed. Skipping unit test run."; \
+	fi
 	@$(foreach ch_service,$(ALL_CHANGED_SERVICES_SORT),\
-		echo Running tests for service: ${SERVICE_ROOT}${ch_service}; \
-		go test -v ${SERVICE_ROOT}$(ch_service)/...; \
+		if [ -d "${SERVICE_ROOT}$(ch_service)" ]; then \
+			echo Running unit tests for service: ${ch_service}; \
+			go test -v ${SERVICE_ROOT}$(ch_service)/...; \
+		fi; \
 	)
 
 trash:
