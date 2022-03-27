@@ -79,6 +79,7 @@ unit-tests: find-files-with-spaces changed-files
 	@if [ "$(TMP_SRV)" = " " ]; then \
 		echo "No service got changed. Skipping unit test run."; \
 	fi
+	
 	@echo Branch name: ${BRANCH_NAME}
 	@echo Git diff @1 $(shell git diff --name-only `git merge-base origin/master HEAD~1`)
 	@echo Git diff @2 $(shell git diff --name-only `git merge-base origin/master HEAD~2`)
