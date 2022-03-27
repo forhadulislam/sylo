@@ -70,9 +70,6 @@ new-package:
 	sed -i -e "s/#PACKAGE_TITLE#/$$PACKAGE_NAME/g" $(PACKAGE_ROOT)$$PACKAGE_NAME"/package_test.go"; \
 	echo "Your package '$$PACKAGE_NAME' created!"; \
 
-delete-service:
-	@echo "Deleting service: $(service)"
-
 # Previously ALL_CHANGED_SERVICES_MASTER was here but currently runnning all
 # of the unit-tests in every run. Trying to figure out how to compare latest
 # commit with the last in Github build
@@ -82,15 +79,17 @@ unit-tests: find-files-with-spaces changed-files
 	@if [ "$(TMP_SRV)" = " " ]; then \
 		echo "No service got changed. Skipping unit test run."; \
 	fi
-	@echo Git $(shell git diff HEAD^ HEAD --name-only)
 	@echo Branch name: ${BRANCH_NAME}
-	@echo Git diff @2 $(shell git diff @{2}.. --name-only)
+	@echo Git diff @2 $(shell git diff --name-only HEAD~10 HEAD~5)
 	@$(foreach ch_service,$(SERVICES_LIST),\
 		if [ -d "$(ch_service)" ]; then \
 			echo Running unit tests for service: ${ch_service}; \
 			go test -v ./$(ch_service)/...; \
 		fi; \
 	)
+
+delete-service:
+	@echo "Deleting service: $(service)"
 
 trash:
 	@read -p "Enter Service Name:" SERVICE_NAME; \
