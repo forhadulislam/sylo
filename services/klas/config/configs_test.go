@@ -6,5 +6,5 @@ import (
 )
 
 func Test_Configs(t *testing.T) {
-	assert.NotEmpty(t, Config()  ) 
+	assert.NotEmpty(t, Config() ) 
 }
