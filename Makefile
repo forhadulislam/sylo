@@ -81,7 +81,7 @@ unit-tests: find-files-with-spaces changed-files
 	@echo ${ALL_CHANGED_FILES_MASTER}
 	@echo Git $(shell git diff HEAD^ HEAD --name-only)
 	@echo Branch name: ${BRANCH_NAME}
-	@echo Git $(shell git log origin/master --format="%H" -n 3)
+	@echo Git diff @2 $(shell git diff @{2}.. --name-only)
 	@if [ "$(TMP_SRV)" = " " ]; then \
 		echo "No service got changed. Skipping unit test run."; \
 	fi
