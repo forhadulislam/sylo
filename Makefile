@@ -70,6 +70,24 @@ new-package:
 	sed -i -e "s/#PACKAGE_TITLE#/$$PACKAGE_NAME/g" $(PACKAGE_ROOT)$$PACKAGE_NAME"/package_test.go"; \
 	echo "Your package '$$PACKAGE_NAME' created!"; \
 
+.PHONY: start-integration-test-dependencies
+start-integration-test-dependencies:
+	echo "Starting integration test dependencies!";
+
+stop-integration-tests-dependencies:
+	echo "Stopping integration tests!";
+
+VAR_GLOBAL=$(shell cat .env);
+
+integration-tests:
+	@sh -c "make -s start-integration-test-dependencies"; \
+	echo $$?;
+	@sh -c "echo my name; exit 3"; \
+	SETUP=$$?; \
+	echo SETUP: $$SETUP;
+	@echo "Running integration tests!";
+	@sh -c "make -s stop-integration-tests-dependencies";
+
 # Previously ALL_CHANGED_SERVICES_MASTER was here but currently runnning all
 # of the unit-tests in every run. Trying to figure out how to compare latest
 # commit with the last in Github build
