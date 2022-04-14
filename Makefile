@@ -3,6 +3,16 @@ ACTUAL_GO_VERSION := $(shell go version | cut -d ' ' -f3)
 REQ_GO_MINOR_VERSION := $(shell echo ${PREFERRED_GO_VERSION} | cut -d '.' -f2)
 SYSTEM_GO_MINOR_VERSION  := $(shell echo ${ACTUAL_GO_VERSION} | cut -d '.' -f2)
 
+export GOBIN ?= $(shell go env GOPATH)/bin
+
+ifeq ($(OS),Windows_NT)
+BIN_EXE := .exe
+endif
+
+BIN_DIR		:= bin/
+GOLANGCI_LINT	:= ${BIN_DIR}github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2${BIN_EXE}
+
+
 SERVICE_ROOT = "./services/"
 PACKAGE_ROOT = "./packages/"
 RESOURCES_ROOT = "./.resources/"
@@ -40,9 +50,30 @@ DUPS:=a b a a c
 objects = main.o foo.o bar.o utils.o
 objects += another.o
 
-ifeq ($(OS),Windows_NT)
-	@echo "this is windows"
-endif
+${GOLANGCI_LINT}:
+	$(eval TOOL=$(@:%${BIN_EXE}=%))
+	@echo Installing ${TOOL}...
+	go install $(TOOL:${TOOLS_DIR}%=%)
+	@mkdir -p $(dir ${TOOL})
+	@cp ${GOBIN}/$(firstword $(subst @, ,$(notdir ${TOOL}))) ${TOOL}
+
+lint/%:	${GOLANGCI_LINT}
+	@echo Running linter for ${*}
+	@mkdir -p ${TEST_REPORT_DIR}
+	${GOLANGCI_LINT} run -c=.golangci.yml ${LINT_FORMAT} ${LINT_ONLY_NEW} --build-tags integration,contract_test_consumer,contract_test_provider ./${*}/... ${LINT_OUTPUT}
+
+.PHONY: lint-all
+lint-all:
+	@if [ -x "`which golangci-lint 2>/dev/null`" ]; then \
+		echo "Found golangci-lint"; \
+		go version; \
+		golangci-lint --version; \
+		golangci-lint run ./services/... --disable-all -E errcheck; \
+	else \
+		echo "Installing golangci-lint"; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.45.2; \
+	fi; \
+	
 
 check-go:
 	@echo "Actual go version is ${ACTUAL_GO_VERSION}"

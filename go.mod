@@ -1,4 +1,4 @@
-module golms
+module github.com/forhadulislam/golms
 
 go 1.17
 
