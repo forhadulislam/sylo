@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine3.12 AS multistage
+FROM golang:1.21.3-alpine3.18 AS multistage
 
 RUN apk add --no-cache --update git
 
@@ -11,7 +11,7 @@ RUN go get -d -v \
 
 ##
 
-FROM alpine:3.12
+FROM alpine:3.18
 COPY --from=multistage /go/bin/api /go/bin/
 EXPOSE 8080
 CMD ["/services/bin/api"]
