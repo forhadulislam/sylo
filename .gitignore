@@ -24,3 +24,4 @@ vendor/
 .vscode/
 bin/
 
+commitlint.config.js
