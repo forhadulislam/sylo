@@ -1,6 +1,6 @@
- package config
+package config
 
- func Config() string{
-	 var a
+func Config() string {
+	// var a
 	return "My config "
 }

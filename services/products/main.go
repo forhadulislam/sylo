@@ -5,6 +5,5 @@ import (
 )
 
 func main() {
-	var b
-	fmt.Println("My new Service A! ") 
+	fmt.Println("My new Service A! ")
 }
