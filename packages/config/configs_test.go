@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Configs(t *testing.T) {
-	assert.NotEmpty(t, Config() ) 
+	assert.NotEmpty(t, Config())
 }
