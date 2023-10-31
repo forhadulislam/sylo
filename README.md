@@ -29,6 +29,10 @@ To use git hooks you need to install `pre-commit` package. You can install it by
 
     brew install pre-commit
 
+or you can install it using `pip`
+
+    pip install pre-commit
+
 After installing `pre-commit` you need to run this command to install the hooks
 
     pre-commit install
