@@ -17,7 +17,7 @@ A Golang microservice helper.
 
 To create a new service with `Sylo` use this command
 
-  `make create-service`
+    make create-service
 
 You will have to input a unique service name. And it requires to provide service names without any `spaces`. If you have created a new service successfully then you should see a new directory created inside the `./service` directory with the same name you provided for the service.
 
@@ -27,11 +27,11 @@ Sylo uses `pre-commit` git hooks to run some commands before committing.
 
 To use git hooks you need to install `pre-commit` package. You can install it by running this command
 
-  `brew install pre-commit`
+    brew install pre-commit
 
 After installing `pre-commit` you need to run this command to install the hooks
 
-  `pre-commit install`
+    pre-commit install
 
 ### How to run a Service
 
