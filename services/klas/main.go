@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/forhadulislam/golms/packages/config"
+	"github.com/forhadulislam/sylo/packages/config"
 )
 
 func main() {

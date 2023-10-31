@@ -1,4 +1,4 @@
-module github.com/forhadulislam/golms
+module github.com/forhadulislam/sylo
 
 go 1.21
 
